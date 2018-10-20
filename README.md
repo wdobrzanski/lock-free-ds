@@ -4,7 +4,7 @@ This repo contains non-blocking, [lock-free](https://en.wikipedia.org/wiki/Non-b
 
 The nice thing about lock-free algorithms is that they provide a very strong guarantee - global progress, although they are not necessarily better/faster than their lock-based counterparts.
 
-Currently, all implementations in this repository are vulnerable to the infamous [ABA problem](https://en.wikipedia.org/wiki/ABA_problem).
+Currently, some of implementations in this repository might be vulnerable to the infamous [ABA problem](https://en.wikipedia.org/wiki/ABA_problem).
 
 # Running
     mvn package 
