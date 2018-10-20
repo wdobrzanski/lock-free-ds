@@ -60,7 +60,7 @@ class LockFreeStackTest extends Specification {
             peekResult == 2
     }
 
-    def "race condition should not occur when adding distinct elements in parallel"() {
+    def "data race should not occur when adding distinct elements in parallel"() {
         given:
             LockFreeStack<Integer> stack = new LockFreeStack<>()
         and:
@@ -85,7 +85,7 @@ class LockFreeStackTest extends Specification {
             distinctPoppedElements.size() == iterations
     }
 
-    def "race condition should not occur when popping elements in parallel"() {
+    def "data race should not occur when popping elements in parallel"() {
         given:
             LockFreeStack<Integer> stack = new LockFreeStack<>()
             BlockingQueue<Integer> poppedElements = new ArrayBlockingQueue<>(iterations)
