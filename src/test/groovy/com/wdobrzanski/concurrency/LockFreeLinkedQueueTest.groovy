@@ -11,7 +11,7 @@ class LockFreeLinkedQueueTest extends ConcurrencyTest {
             new LockFreeLinkedQueue<>().isEmpty()
     }
 
-    def "stack should not be empty after adding a new element"() {
+    def "queue should not be empty after adding a new element"() {
         given:
             LockFreeLinkedQueue<Integer> queue = new LockFreeLinkedQueue<>()
         when:
@@ -20,7 +20,7 @@ class LockFreeLinkedQueueTest extends ConcurrencyTest {
             !queue.isEmpty()
     }
 
-    def "should push and pop values correctly"() {
+    def "should add and poll values correctly"() {
         given:
             LockFreeLinkedQueue<Integer> queue = new LockFreeLinkedQueue<>()
         expect:
@@ -53,7 +53,7 @@ class LockFreeLinkedQueueTest extends ConcurrencyTest {
             distinctPoppedElements.size() == iterations
     }
 
-    def "data race should not occur when popping elements in parallel"() {
+    def "data race should not occur when polling elements in parallel"() {
         given:
             LockFreeLinkedQueue<Integer> queue = new LockFreeLinkedQueue<>()
             BlockingQueue<Integer> poppedElements = new ArrayBlockingQueue<>(iterations)
