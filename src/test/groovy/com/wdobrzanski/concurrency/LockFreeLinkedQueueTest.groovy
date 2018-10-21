@@ -1,65 +1,41 @@
 package com.wdobrzanski.concurrency
 
-import spock.lang.Specification
-
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.BlockingQueue
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.Executors
 import java.util.stream.IntStream
 
-class LockFreeStackTest extends ConcurrencyTest {
+class LockFreeLinkedQueueTest extends ConcurrencyTest {
 
-    def "new stack should be empty"() {
+    def "new queue should be empty"() {
         expect:
-            new LockFreeStack<Integer>().isEmpty()
+            new LockFreeLinkedQueue<>().isEmpty()
     }
 
     def "stack should not be empty after adding a new element"() {
         given:
-            LockFreeStack<Integer> stack = new LockFreeStack<>()
+            LockFreeLinkedQueue<Integer> queue = new LockFreeLinkedQueue<>()
         when:
-            stack.push(1)
+            queue.add(1)
         then:
-            !stack.isEmpty()
+            !queue.isEmpty()
     }
 
     def "should push and pop values correctly"() {
         given:
-            LockFreeStack<Integer> stack = new LockFreeStack<>()
+            LockFreeLinkedQueue<Integer> queue = new LockFreeLinkedQueue<>()
         expect:
-            IntStream.range(1, 10).forEach{i -> stack.push(i)}
-            IntStream.range(1, 10).forEach{i -> assert (10-i) == stack.pop()}
-    }
-
-    def "peek should throw an exception when there are no elements"() {
-        given:
-            LockFreeStack<Integer> stack = new LockFreeStack<>()
-        when:
-            stack.peek()
-        then:
-            thrown EmptyStackException
-    }
-
-    def "peek should return recently added value"() {
-        given:
-            LockFreeStack<Integer> stack = new LockFreeStack<>()
-            stack.push(1)
-            stack.push(2)
-        when:
-            def peekResult = stack.peek()
-        then:
-            peekResult == 2
+            IntStream.range(1, 10).forEach{i -> queue.add(i)}
+            IntStream.range(1, 10).forEach{i -> assert i == queue.poll()}
     }
 
     def "data race should not occur when adding distinct elements in parallel"() {
         given:
-            LockFreeStack<Integer> stack = new LockFreeStack<>()
+            LockFreeLinkedQueue<Integer> queue = new LockFreeLinkedQueue<>()
         and:
             def task = { Integer value ->
                 return {
                     binaryLatch.await()
-                    stack.push(value)
+                    queue.add(value)
                     allIterationsFinishedLatch.countDown()
                 }
             }
@@ -71,27 +47,27 @@ class LockFreeStackTest extends ConcurrencyTest {
             allIterationsFinishedLatch.await()
         then:
             def distinctPoppedElements = [] as Set<Integer>
-            while (!stack.isEmpty()) {
-                distinctPoppedElements.add(stack.pop())
+            while (!queue.isEmpty()) {
+                distinctPoppedElements.add(queue.poll())
             }
             distinctPoppedElements.size() == iterations
     }
 
     def "data race should not occur when popping elements in parallel"() {
         given:
-            LockFreeStack<Integer> stack = new LockFreeStack<>()
+            LockFreeLinkedQueue<Integer> queue = new LockFreeLinkedQueue<>()
             BlockingQueue<Integer> poppedElements = new ArrayBlockingQueue<>(iterations)
         and:
             def task = { Integer value ->
                 return {
                     binaryLatch.await()
-                    poppedElements.put(stack.pop())
+                    poppedElements.put(queue.poll())
                     allIterationsFinishedLatch.countDown()
                 }
             }
         and:
             IntStream.range(0, iterations).forEach{
-                i -> stack.push(i)
+                i -> queue.add(i)
             }
         when:
             IntStream.range(0, iterations).forEach{

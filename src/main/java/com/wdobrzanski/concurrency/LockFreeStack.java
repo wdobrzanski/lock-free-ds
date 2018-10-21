@@ -15,7 +15,7 @@ public class LockFreeStack<T> {
         }
     }
 
-    private AtomicReference<Node<T>> top = new AtomicReference<Node<T>>();
+    private AtomicReference<Node<T>> top = new AtomicReference<>();
 
     public boolean push(T value) {
         while (true) {
