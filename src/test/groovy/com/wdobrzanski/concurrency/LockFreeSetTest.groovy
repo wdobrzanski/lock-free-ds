@@ -31,7 +31,7 @@ class LockFreeSetTest extends ConcurrencyTest {
             !set.remove(1)
     }
 
-    def "remove should return false when removing previously added element"() {
+    def "remove should return true when removing previously added element"() {
         given:
             LockFreeSet<Integer> set = new LockFreeSet<>()
         and:
@@ -47,7 +47,7 @@ class LockFreeSetTest extends ConcurrencyTest {
             !set.contains(5)
     }
 
-    def "contains should return false when checking previously added element"() {
+    def "contains should return true when checking previously added element"() {
         given:
             LockFreeSet<Integer> set = new LockFreeSet<>()
         and:
